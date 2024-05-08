@@ -1,18 +1,17 @@
+import React from 'react';
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import useGenres from '../Hooks/useGenres';
 import Skeleton from './Skeleton';
 import FilterCard from './FilterCard';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
+import useFilters from '../Hooks/useFilters';
 
 const FilterList = () => {
-  const {isLoading, error, isSuccess, data} = useGenres();
-  const [genres, setGenres] = useState<Array<Record<string, any>>>([]);
+  const {isLoading, isSuccess} = useFilters();
+
+  const filters = useSelector((state: RootState) => state.filter.filters);
   const windowWidth = Dimensions.get('window').width;
-  useEffect(() => {
-    if (isSuccess && data) {
-      setGenres(data.genres);
-    }
-  }, [data,isSuccess]);
+
   return (
     <ScrollView horizontal>
       <View style={styles.containerStyle}>
@@ -23,8 +22,9 @@ const FilterList = () => {
             ))}
           </>
         ) : (
-          genres.map(genre => (
-            <FilterCard key={genre.id} id={genre.id} name={genre.name} />
+          isSuccess &&
+          filters.map(filter => (
+            <FilterCard key={filter.id} id={filter.id} name={filter.name} />
           ))
         )}
       </View>
