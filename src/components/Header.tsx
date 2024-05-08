@@ -1,17 +1,16 @@
 import React from 'react';
-import {Text, StyleSheet, Platform} from 'react-native';
-import {SafeAreaView} from 'react-native';
+import {Text, StyleSheet, Platform, View} from 'react-native';
 
 import FilterList from './FilterList';
 
 const Header: React.FC = () => {
-  const safeAreaHeight = Platform.OS === 'android' ? 0 : 24; // Adjust the value as per your requirement
+  const safeAreaHeight = Platform.OS === 'android' ? 0 : 60;
 
   return (
-    <SafeAreaView style={[styles.container, {paddingTop: safeAreaHeight}]}>
+    <View style={[styles.container, {paddingTop: safeAreaHeight}]}>
       <Text style={styles.title}>MovieFlix</Text>
       <FilterList />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -20,7 +19,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     paddingBottom: 16,
+    paddingHorizontal: 12,
     backgroundColor: '#242424',
+    gap: 8,
   },
   title: {
     fontSize: 18,
