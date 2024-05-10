@@ -1,12 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   Text,
   View,
   ScrollView,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  FlatList,
   StyleSheet,
   Dimensions,
 } from 'react-native';
@@ -32,14 +31,8 @@ const MovieList = () => {
     return Dimensions.get('window').width;
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      console.log('Movies:', movies);
-    }
-  });
-
   return (
-    <ScrollView onScroll={handleScroll} style={{backgroundColor: '#000'}}>
+    <ScrollView style={{backgroundColor: '#000'}}>
       {isLoading && <Text>Loading...</Text>}
       {isSuccess && (
         <View style={styles.container}>
@@ -48,10 +41,8 @@ const MovieList = () => {
             return (
               <>
                 <Text style={styles.yearText}>{year}</Text>
-                <FlatList
-                  data={movie[year].movies}
-                  contentContainerStyle={styles.listContainer}
-                  renderItem={({item}) => {
+                <View style={styles.listContainer}>
+                  {movie[year].movies.map(item=> {
                     return (
                       <View
                         style={{
@@ -61,8 +52,8 @@ const MovieList = () => {
                         <MovieCard movie={item} />
                       </View>
                     );
-                  }}
-                />
+                  })}
+                </View>
               </>
             );
           })}
@@ -78,6 +69,7 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     flexDirection: 'row',
+    justifyContent: 'center',
     flexWrap: 'wrap',
     gap: 16,
     width: '100%',
@@ -96,5 +88,4 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-
 });

@@ -19,8 +19,7 @@ const useFilters = (): {
   const dispatch = useDispatch();
   useEffect(() => {
     if (!isLoading && isSuccess) {
-      dispatch(addFilters([{id: 1, name: 'All'}, ...data?.genres]));
-      dispatch(selectFilter({id: 1, name: 'all'}));
+      dispatch(addFilters(data?.genres));
     }
   }, [data, dispatch, isLoading, isSuccess]);
 

@@ -14,11 +14,11 @@ const Api: AxiosInstance = axios.create({
 Api.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
     config.headers['Content-Type'] = 'application/json';
-    config.headers['Accept'] = 'application/json';
-    config.headers['Authorization'] =
+    config.headers.Accept = 'application/json';
+    config.headers.Authorization =
       'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMWYwMjExNmIzNzNiNzlhYjQ4ZTExMzlmY2NlNDQ4ZCIsInN1YiI6IjYyMDUyZTBlODdmM2YyMDBkODIwYzk4NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.wYu-1ojEFjM1Vn7HRYsd_ndnAPCZKothfeC_twhycWo';
     console.log('-------------------------------------');
-    console.log('Request:', config.headers);
+    console.log('Request:', `${config.baseURL}${config.url}`, config.params);
     console.log('-------------------------------------');
 
     return config;

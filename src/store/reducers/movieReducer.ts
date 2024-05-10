@@ -37,8 +37,13 @@ export const movieSlice = createSlice({
     addMoviesAtEnd: (state, action: PayloadAction<IMoviesData>) => {
       state.push(action.payload); // Add movie at the end of the array
     },
+    resetMovieData: state => {
+      state = [];
+      return state;
+    },
   },
 });
 
-export const {addMoviesAtBeginning, addMoviesAtEnd} = movieSlice.actions;
+export const {addMoviesAtBeginning, addMoviesAtEnd, resetMovieData} =
+  movieSlice.actions;
 export default movieSlice.reducer;

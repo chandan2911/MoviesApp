@@ -11,8 +11,16 @@ export interface IFilterState {
 }
 
 const initialState: IFilterState = {
-  selectedFilter: null,
-  filters: [],
+  selectedFilter: {
+    id: 0,
+    name: 'All',
+  },
+  filters: [
+    {
+      id: 0,
+      name: 'All',
+    },
+  ],
 };
 
 export const filterSlice = createSlice({
@@ -23,7 +31,7 @@ export const filterSlice = createSlice({
       state.filters.push(action.payload);
     },
     addFilters: (state, action: PayloadAction<IFilter[]>) => {
-      state.filters = action.payload;
+      state.filters = [...state.filters, ...action.payload];
     },
     selectFilter: (state, action: PayloadAction<IFilter>) => {
       state.selectedFilter = action.payload;

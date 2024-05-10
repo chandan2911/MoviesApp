@@ -4,6 +4,7 @@ import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {selectFilter} from '../store/reducers/filterReducer';
+import {resetMovieData} from '../store/reducers/movieReducer';
 
 interface FilterCardProps {
   id: number;
@@ -12,7 +13,10 @@ interface FilterCardProps {
 
 const FilterCard: React.FC<FilterCardProps> = ({id, name}) => {
   const onPress = () => {
-    dispatch(selectFilter({id, name}));
+    if (selectedFilter?.id !== id) {
+      dispatch(resetMovieData());
+      dispatch(selectFilter({id, name}));
+    }
   };
   const dispatch = useDispatch();
   const selectedFilter = useSelector(

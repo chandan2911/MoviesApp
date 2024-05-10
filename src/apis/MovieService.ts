@@ -19,7 +19,7 @@ export default class MovieService {
     const voteCount = 100;
     const response = await Api.get('/discover/movie', {
       params: {
-        with_genres: genreId,
+        with_genres: genreId.toString(),
         page: page,
         sort_by: sortBy,
         'vote_count.gte': voteCount,
