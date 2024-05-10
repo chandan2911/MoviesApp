@@ -32,4 +32,14 @@ export default class MovieService {
     const response = await Api.get('/genre/movie/list');
     return response;
   }
+  static async getBySearch(query: string, page: number) {
+    const response = await Api.get('/search/movie', {
+      params: {
+        query: query,
+        page: page,
+        include_adult: false,
+      },
+    });
+    return response;
+  }
 }
