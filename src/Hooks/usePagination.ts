@@ -6,6 +6,8 @@ import {selectPagination} from '../store/reducers/paginationReducer';
 const usePagination = () => {
   const dispatch = useDispatch();
   const movies = useSelector((state: RootState) => state.movies);
+  const maxYear = new Date().getFullYear();
+  const minYear = '1980';
   const {selectedPagination} = useSelector(
     (state: RootState) => state.pagination,
   );
@@ -26,8 +28,8 @@ const usePagination = () => {
     if (!selectedYearData) {
       return true;
     }
-    return (
-      Math.min(selectedYearData?.totalPages, 2) === selectedPagination.page
+    return Boolean(
+      Math.min(selectedYearData?.totalPages, 2) === selectedPagination.page,
     );
   }, [getSelectedYearData, selectedPagination.page]);
 
@@ -36,13 +38,16 @@ const usePagination = () => {
   }, [selectedPagination.page]);
 
   const handleNextPage = () => {
-    if (isLastPage) {
+    if (selectedPagination.year === maxYear.toString() && isLastPage) {
+      return;
+    } else if (isLastPage) {
       dispatch(
         selectPagination({
           page: 1,
-          year: ((selectedPagination.year as unknown as number) + 1).toString(),
+          year: (parseInt(selectedPagination.year, 10) + 1).toString(),
         }),
       );
+      return;
     }
     dispatch(
       selectPagination({
@@ -52,13 +57,16 @@ const usePagination = () => {
     );
   };
   const handlePreviousPage = () => {
-    if (isFirstPage) {
+    if (selectedPagination.year === minYear && isFirstPage) {
+      return;
+    } else if (isFirstPage) {
       dispatch(
         selectPagination({
           page: 2,
-          year: ((selectedPagination.year as unknown as number) - 1).toString(),
+          year: (parseInt(selectedPagination.year, 10) - 1).toString(),
         }),
       );
+      return;
     }
     dispatch(
       selectPagination({
