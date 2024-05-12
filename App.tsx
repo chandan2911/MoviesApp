@@ -12,7 +12,7 @@ const App = () => {
     // Provide the client to your App
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <View>
+        <View style={{height: '100%'}}>
           <Header />
           <MovieList />
         </View>

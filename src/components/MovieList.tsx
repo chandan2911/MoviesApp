@@ -8,10 +8,12 @@ import MovieCard from './MovieCard';
 import usePagination from '../Hooks/usePagination';
 import _ from 'lodash';
 import {IMoviesData} from '../store/reducers/movieReducer';
+import Loader from './Loader';
 
 const MovieList = () => {
   const movies = useSelector((state: RootState) => state.movies);
   const [movieData, setMovieData] = React.useState<IMoviesData[] | []>([]);
+  const {scrollDirection} = useSelector((state: RootState) => state.pagination);
 
   const {handleNextPage, handlePreviousPage} = usePagination();
 
@@ -20,7 +22,8 @@ const MovieList = () => {
     console.log('movies: ', movies);
   }, [movies]);
 
-  const {isSuccess, isLoading} = useMovies();
+  const {isLoading} = useMovies();
+  // let isLoading = true;
 
   const handleNextPageDebounced = _.debounce(handleNextPage, 200);
   const handlePreviousPageDebounced = _.debounce(handlePreviousPage, 200);
@@ -29,6 +32,9 @@ const MovieList = () => {
     return Dimensions.get('window').width;
   };
 
+  const getDeviceHeight = () => {
+    return Dimensions.get('window').height;
+  };
   const renderItem = ({item}) => {
     const year = Object.keys(item)[0];
     const movieDataForYear = item[year];
@@ -58,18 +64,55 @@ const MovieList = () => {
     }
     return null;
   };
-
-  return (
-    <FlatList
-      data={movieData}
-      renderItem={renderItem}
-      keyExtractor={item => Object.keys(item)[0]}
-      onEndReached={handleNextPageDebounced}
-      onEndReachedThreshold={0.5}
-      onScrollBeginDrag={handlePreviousPageDebounced}
-      maintainVisibleContentPosition={{minIndexForVisible: 0}}
-    />
-  );
+  const renderContent = (): React.ReactNode => {
+    if (isLoading && movieData.length === 0) {
+      return <Loader height={getDeviceHeight()} />;
+    } else if (movieData.length === 0) {
+      return <Text>No movies found</Text>;
+    } else if (movieData.length >= 0) {
+      return (
+        <>
+          {isLoading && scrollDirection === 'up' && (
+            <Loader height={getDeviceHeight()} />
+          )}
+          {renderMovieList()}
+          {isLoading && scrollDirection === 'down' && (
+            <Loader height={getDeviceHeight() / 2} />
+          )}
+        </>
+      );
+    }
+  };
+  const renderMovieList = () => {
+    return (
+      <FlatList
+        data={movieData}
+        renderItem={renderItem}
+        keyExtractor={item => Object.keys(item)[0]}
+        onEndReached={handleNextPageDebounced}
+        onEndReachedThreshold={0.5}
+        onScroll={({nativeEvent}) => {
+          if (nativeEvent.contentOffset.y <= 0) {
+            handlePreviousPageDebounced();
+          }
+        }}
+        onMomentumScrollEnd={({nativeEvent}) => {
+          if (
+            nativeEvent.contentOffset.y >=
+            nativeEvent.contentSize.height -
+              nativeEvent.layoutMeasurement.height
+          ) {
+            handleNextPageDebounced();
+          }
+        }}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+          autoscrollToTopThreshold: 10,
+        }}
+      />
+    );
+  };
+  return <View style={styles.container}>{renderContent()}</View>;
 };
 
 export default MovieList;
