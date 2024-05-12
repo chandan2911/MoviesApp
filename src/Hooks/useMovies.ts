@@ -17,11 +17,11 @@ const useMovies = () => {
   const dispatch = useDispatch();
 
   const pushDataBasedOnScrollDirection = (movieData: IMoviesData) => {
-    if (scrollDirection === 'down') {
+    // if (scrollDirection === 'down') {
       dispatch(addMoviesAtEnd(movieData));
-    } else {
-      dispatch(addMoviesAtBeginning(movieData));
-    }
+    // } else {
+    //   dispatch(addMoviesAtBeginning(movieData));
+    // }
   };
 
   const {isLoading, isSuccess} = useQuery({
@@ -50,13 +50,10 @@ const useMovies = () => {
       if (movies.length === 0) {
         dispatch(addMoviesAtBeginning(movieData));
         return;
-      } else {
-        if (movieData[selectedPagination.year].movies.length > 0) {
-          // TODO: Add logic to handle if data already exists for that year
-        } else {
-          // TODO: Add logic to handle if data does not exist for that year
-        }
       }
+
+      pushDataBasedOnScrollDirection(movieData);
+      return;
     },
   });
 

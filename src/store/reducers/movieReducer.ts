@@ -1,7 +1,7 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 
 export interface IMoviesData {
-  [year: number]: {
+  [year: string]: {
     movies: Movie[];
     totalPages: number;
     totalResults: number;

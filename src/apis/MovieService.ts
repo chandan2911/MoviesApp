@@ -1,7 +1,7 @@
 import Api from './apis';
 
 export default class MovieService {
-  static async getMoviesByYear(year: number, page: number) {
+  static async getMoviesByYear(year: string, page: number) {
     const sortBy = 'popularity.desc';
     const voteCount = 100;
     const response = await Api.get('/discover/movie', {

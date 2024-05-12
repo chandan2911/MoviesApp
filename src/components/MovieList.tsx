@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {
   Text,
   View,
@@ -14,17 +14,33 @@ import {useDispatch, useSelector} from 'react-redux';
 import useMovies from '../Hooks/useMovies';
 import {setScrollDirection} from '../store/reducers/paginationReducer';
 import MovieCard from './MovieCard';
+import usePagination from '../Hooks/usePagination';
 
 const MovieList = () => {
   const dispatch = useDispatch();
   const movies = useSelector((state: RootState) => state.movies);
+  const {handleNextPage, handlePreviousPage} = usePagination();
 
   const {isSuccess, isLoading} = useMovies();
+  const isEndReached = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    return (
+      event.nativeEvent.layoutMeasurement.height +
+        event.nativeEvent.contentOffset.y >=
+      event.nativeEvent.contentSize.height
+    );
+  };
+  const isTopReached = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    return event.nativeEvent.contentOffset.y <= 0;
+  };
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentOffset = event.nativeEvent.contentOffset.y;
-    const direction = currentOffset > 0 ? 'down' : 'up';
-    dispatch(setScrollDirection(direction));
+    if (isEndReached(event)) {
+      handleNextPage();
+    }
+    if (isTopReached(event)) {
+      handlePreviousPage();
+    }
+    console.log(isEndReached);
   };
 
   const getDeviceWidth = () => {
@@ -32,29 +48,31 @@ const MovieList = () => {
   };
 
   return (
-    <ScrollView style={{backgroundColor: '#000'}}>
+    <ScrollView style={{backgroundColor: '#000'}} onScroll={handleScroll}>
       {isLoading && <Text>Loading...</Text>}
       {isSuccess && (
         <View style={styles.container}>
           {movies.map((movie, index) => {
             const year = Object.keys(movie)[index];
+            console.log('movie', movie[year]);
             return (
-              <>
+              <View key={year}>
                 <Text style={styles.yearText}>{year}</Text>
                 <View style={styles.listContainer}>
-                  {movie[year].movies.map(item=> {
+                  {movie[year].movies.map(item => {
                     return (
                       <View
                         style={{
                           width: getDeviceWidth() / 2.2,
                           backgroundColor: 'white',
-                        }}>
+                        }}
+                        key={item.id}>
                         <MovieCard movie={item} />
                       </View>
                     );
                   })}
                 </View>
-              </>
+              </View>
             );
           })}
         </View>
