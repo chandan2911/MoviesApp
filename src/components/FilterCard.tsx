@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {selectFilter} from '../store/reducers/filterReducer';
 import {resetMovieData} from '../store/reducers/movieReducer';
+import { resetPagination } from '../store/reducers/paginationReducer';
 
 interface FilterCardProps {
   id: number;
@@ -16,6 +17,7 @@ const FilterCard: React.FC<FilterCardProps> = ({id, name}) => {
     if (selectedFilter?.id !== id) {
       dispatch(resetMovieData());
       dispatch(selectFilter({id, name}));
+      dispatch(resetPagination());
     }
   };
   const dispatch = useDispatch();

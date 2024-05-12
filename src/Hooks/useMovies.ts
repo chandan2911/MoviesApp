@@ -7,6 +7,7 @@ import {
   addMoviesAtBeginning,
   addMoviesAtEnd,
 } from '../store/reducers/movieReducer';
+import {useCallback} from 'react';
 
 const useMovies = () => {
   const {selectedPagination, scrollDirection} = useSelector(
@@ -16,33 +17,42 @@ const useMovies = () => {
   const filter = useSelector((state: RootState) => state.filter);
   const dispatch = useDispatch();
 
+  const getSelectedYearData = useCallback(() => {
+    const selectedYearData = movies.find((movie, index) => {
+      const year = Object.keys(movie)[index];
+      return year === selectedPagination;
+    });
+    if (!selectedYearData) {
+      return null;
+    }
+    return selectedYearData[selectedPagination];
+  }, [movies, selectedPagination]);
+
   const pushDataBasedOnScrollDirection = (movieData: IMoviesData) => {
-    // if (scrollDirection === 'down') {
-      dispatch(addMoviesAtEnd(movieData));
-    // } else {
-    //   dispatch(addMoviesAtBeginning(movieData));
-    // }
+    const selectedYearData = getSelectedYearData();
+    if (!selectedYearData) {
+      if (scrollDirection === 'down') {
+        dispatch(addMoviesAtEnd(movieData));
+      } else {
+        dispatch(addMoviesAtBeginning(movieData));
+      }
+    }
   };
 
   const {isLoading, isSuccess} = useQuery({
     queryKey: [
       'movies',
       {
-        page: selectedPagination?.page,
-        year: selectedPagination?.year,
+        year: selectedPagination,
       },
     ],
     enabled: filter.selectedFilter?.id === 0,
-    queryFn: () =>
-      MovieService.getMoviesByYear(
-        selectedPagination.year,
-        selectedPagination.page,
-      ),
+    queryFn: () => MovieService.getMoviesByYear(selectedPagination, 1),
 
     onSuccess: data => {
       const movieData = {
-        [selectedPagination.year]: {
-          movies: data.results, // Access the 'data' property first
+        [selectedPagination]: {
+          movies: data.results,
           totalPages: data.total_pages,
           totalResults: data.total_results,
         },
@@ -51,7 +61,6 @@ const useMovies = () => {
         dispatch(addMoviesAtBeginning(movieData));
         return;
       }
-
       pushDataBasedOnScrollDirection(movieData);
       return;
     },
@@ -62,8 +71,7 @@ const useMovies = () => {
       queryKey: [
         'movies',
         {
-          page: selectedPagination?.page,
-          year: selectedPagination?.year,
+          year: selectedPagination,
           filter: filter.selectedFilter?.id,
         },
       ],
@@ -71,12 +79,12 @@ const useMovies = () => {
       queryFn: () =>
         MovieService.getMoviesByGenre(
           filter.selectedFilter.id,
-          selectedPagination.page,
-          selectedPagination.year,
+          1,
+          parseInt(selectedPagination, 10),
         ),
       onSuccess: data => {
         const movieData = {
-          [selectedPagination.year]: {
+          [selectedPagination]: {
             movies: data.results, // Access the 'data' property first
             totalPages: data.total_pages,
             totalResults: data.total_results,
@@ -85,12 +93,6 @@ const useMovies = () => {
         if (movies.length === 0) {
           dispatch(addMoviesAtBeginning(movieData));
           return;
-        } else {
-          if (movieData[selectedPagination.year].movies.length > 0) {
-            // TODO: Add logic to handle if data already exists for that year
-          } else {
-            // TODO: Add logic to handle if data does not exist for that year
-          }
         }
       },
     });

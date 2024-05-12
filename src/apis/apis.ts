@@ -31,9 +31,9 @@ Api.interceptors.request.use(
 // Add a response interceptor
 Api.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log('-------------------------------------');
-    console.log('Response:', response.data);
-    console.log('-------------------------------------');
+    // console.log('-------------------------------------');
+    // console.log('Response:', response.data);
+    // console.log('-------------------------------------');
 
     return response.data;
   },

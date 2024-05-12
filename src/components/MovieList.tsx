@@ -1,83 +1,74 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useCallback, useMemo} from 'react';
-import {
-  Text,
-  View,
-  ScrollView,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {Text, View, StyleSheet, Dimensions, FlatList} from 'react-native';
 import {RootState} from '../store';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import useMovies from '../Hooks/useMovies';
-import {setScrollDirection} from '../store/reducers/paginationReducer';
 import MovieCard from './MovieCard';
 import usePagination from '../Hooks/usePagination';
+import _ from 'lodash';
+import {IMoviesData} from '../store/reducers/movieReducer';
 
 const MovieList = () => {
-  const dispatch = useDispatch();
   const movies = useSelector((state: RootState) => state.movies);
+  const [movieData, setMovieData] = React.useState<IMoviesData[] | []>([]);
+
   const {handleNextPage, handlePreviousPage} = usePagination();
 
-  const {isSuccess, isLoading} = useMovies();
-  const isEndReached = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    return (
-      event.nativeEvent.layoutMeasurement.height +
-        event.nativeEvent.contentOffset.y >=
-      event.nativeEvent.contentSize.height
-    );
-  };
-  const isTopReached = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    return event.nativeEvent.contentOffset.y <= 0;
-  };
+  useEffect(() => {
+    setMovieData(movies);
+    console.log('movies: ', movies);
+  }, [movies]);
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (isEndReached(event)) {
-      handleNextPage();
-    }
-    if (isTopReached(event)) {
-      handlePreviousPage();
-    }
-    console.log(isEndReached);
-  };
+  const {isSuccess, isLoading} = useMovies();
+
+  const handleNextPageDebounced = _.debounce(handleNextPage, 200);
+  const handlePreviousPageDebounced = _.debounce(handlePreviousPage, 200);
 
   const getDeviceWidth = () => {
     return Dimensions.get('window').width;
   };
 
-  return (
-    <ScrollView style={{backgroundColor: '#000'}} onScroll={handleScroll}>
-      {isLoading && <Text>Loading...</Text>}
-      {isSuccess && (
-        <View style={styles.container}>
-          {movies.map((movie, index) => {
-            const year = Object.keys(movie)[index];
-            console.log('movie', movie[year]);
-            return (
-              <View key={year}>
-                <Text style={styles.yearText}>{year}</Text>
-                <View style={styles.listContainer}>
-                  {movie[year].movies.map(item => {
-                    return (
-                      <View
-                        style={{
-                          width: getDeviceWidth() / 2.2,
-                          backgroundColor: 'white',
-                        }}
-                        key={item.id}>
-                        <MovieCard movie={item} />
-                      </View>
-                    );
-                  })}
-                </View>
+  const renderItem = ({item}) => {
+    const year = Object.keys(item)[0];
+    const movieDataForYear = item[year];
+    if (
+      year &&
+      movieDataForYear &&
+      movieDataForYear.movies &&
+      movieDataForYear.movies.length > 0
+    ) {
+      return (
+        <View key={year} style={styles.container}>
+          <Text style={styles.yearText}>{year}</Text>
+          <View style={styles.listContainer}>
+            {movieDataForYear.movies.map(movie => (
+              <View
+                style={{
+                  width: getDeviceWidth() / 2.2,
+                  backgroundColor: 'white',
+                }}
+                key={movie.id}>
+                <MovieCard movie={movie} />
               </View>
-            );
-          })}
+            ))}
+          </View>
         </View>
-      )}
-    </ScrollView>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <FlatList
+      data={movieData}
+      renderItem={renderItem}
+      keyExtractor={item => Object.keys(item)[0]}
+      onEndReached={handleNextPageDebounced}
+      onEndReachedThreshold={0.5}
+      onScrollBeginDrag={handlePreviousPageDebounced}
+      maintainVisibleContentPosition={{minIndexForVisible: 0}}
+    />
   );
 };
 
@@ -105,5 +96,6 @@ const styles = StyleSheet.create({
     gap: 16,
     width: '100%',
     alignItems: 'center',
+    backgroundColor: '#000',
   },
 });
