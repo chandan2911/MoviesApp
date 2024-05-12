@@ -61,14 +61,6 @@ const MovieList = () => {
   const renderContent = (): React.ReactNode => {
     if (isLoading && movieData.length === 0) {
       return <Loader />;
-    } else if (movieData.length === 0 && !isLoading) {
-      return (
-        <View>
-          <Text style={{textAlign: 'center', ...styles.yearText}}>
-            No movies found
-          </Text>
-        </View>
-      );
     } else if (movieData.length === 0) {
       return <Text>No movies found</Text>;
     } else if (movieData.length >= 0) {
@@ -78,8 +70,17 @@ const MovieList = () => {
           {isLoading && scrollDirection === 'down' && <Loader />}
         </>
       );
+    } else if (movieData.length === 0 && !isLoading) {
+      return (
+        <View>
+          <Text style={{textAlign: 'center', ...styles.yearText}}>
+            No movies found
+          </Text>
+        </View>
+      );
     }
   };
+
   const renderMovieList = () => {
     return (
       <FlatList
@@ -121,12 +122,13 @@ const styles = StyleSheet.create({
     gap: 16,
     width: '100%',
     alignItems: 'center',
+    paddingBottom: 16,
   },
   yearText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
-    margin: 10,
+    padding: 10,
     alignSelf: 'flex-start',
   },
   container: {
