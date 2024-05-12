@@ -19,21 +19,15 @@ const MovieList = () => {
 
   useEffect(() => {
     setMovieData(movies);
-    console.log('movies: ', movies);
   }, [movies]);
 
   const {isLoading} = useMovies();
-  // let isLoading = true;
 
   const handleNextPageDebounced = _.debounce(handleNextPage, 200);
   const handlePreviousPageDebounced = _.debounce(handlePreviousPage, 200);
 
   const getDeviceWidth = () => {
     return Dimensions.get('window').width;
-  };
-
-  const getDeviceHeight = () => {
-    return Dimensions.get('window').height;
   };
   const renderItem = ({item}) => {
     const year = Object.keys(item)[0];
@@ -66,19 +60,22 @@ const MovieList = () => {
   };
   const renderContent = (): React.ReactNode => {
     if (isLoading && movieData.length === 0) {
-      return <Loader height={getDeviceHeight()} />;
+      return <Loader />;
+    } else if (movieData.length === 0 && !isLoading) {
+      return (
+        <View>
+          <Text style={{textAlign: 'center', ...styles.yearText}}>
+            No movies found
+          </Text>
+        </View>
+      );
     } else if (movieData.length === 0) {
       return <Text>No movies found</Text>;
     } else if (movieData.length >= 0) {
       return (
         <>
-          {isLoading && scrollDirection === 'up' && (
-            <Loader height={getDeviceHeight()} />
-          )}
           {renderMovieList()}
-          {isLoading && scrollDirection === 'down' && (
-            <Loader height={getDeviceHeight() / 2} />
-          )}
+          {isLoading && scrollDirection === 'down' && <Loader />}
         </>
       );
     }
@@ -107,7 +104,6 @@ const MovieList = () => {
         }}
         maintainVisibleContentPosition={{
           minIndexForVisible: 0,
-          autoscrollToTopThreshold: 10,
         }}
       />
     );
@@ -121,7 +117,6 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
     flexWrap: 'wrap',
     gap: 16,
     width: '100%',

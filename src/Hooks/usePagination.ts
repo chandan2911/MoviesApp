@@ -19,7 +19,7 @@ const usePagination = () => {
     if (maxYearPaginated === maxYear) {
       return;
     }
-    setScrollDirection('down');
+    dispatch(setScrollDirection('down'));
 
     dispatch(
       setSelectedPagination((parseInt(maxYearPaginated, 10) + 1).toString()),
@@ -33,7 +33,6 @@ const usePagination = () => {
     if (minYearPaginated === minYear) {
       return;
     }
-
     dispatch(setScrollDirection('up'));
     dispatch(
       setMinYearPaginated((parseInt(minYearPaginated, 10) - 1).toString()),

@@ -94,6 +94,8 @@ const useMovies = () => {
           dispatch(addMoviesAtBeginning(movieData));
           return;
         }
+        pushDataBasedOnScrollDirection(movieData);
+        return;
       },
     });
   return {
