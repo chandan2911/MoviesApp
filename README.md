@@ -60,3 +60,9 @@ If everything is set up _correctly_, you should see your new app running in your
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
 ### if you have any problems in building this project please email me at - chandanchaurasia31@gmail.com
+
+
+Some ScreenShots : 
+![simulator_screenshot_1A9EA9C2-1A70-422D-88D3-42B5FD68495F](https://github.com/chandan2911/MoviesApp/assets/109072815/818ce3bb-a895-49ba-b248-f9f3ddc3eb91)
+![simulator_screenshot_72C75F6A-9BCE-48CF-B4F3-3A7F6F3F42D5](https://github.com/chandan2911/MoviesApp/assets/109072815/bea2d3e7-934b-46cd-81b7-27d4d750b101)
+
