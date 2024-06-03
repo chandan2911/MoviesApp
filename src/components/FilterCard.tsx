@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {selectFilter} from '../store/reducers/filterReducer';
 import {resetMovieData} from '../store/reducers/movieReducer';
-import { resetPagination } from '../store/reducers/paginationReducer';
+import {resetPagination} from '../store/reducers/paginationReducer';
 
 interface FilterCardProps {
   id: number;
